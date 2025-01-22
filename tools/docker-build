@@ -1,0 +1,88 @@
+#!/bin/sh
+#
+# Configuration:
+#   ARCH
+#   BUILD_CONTEXTS
+#   BUILD_ARGS
+#   DOCKER_ARGS
+
+set -e
+[ "$VERBOSE" != 1 ] || set -x
+
+TYPE="$1"
+CFG_FILENAME="$2"
+BUILD_DIR="$3"
+DEST_FILENAME="$4"
+
+. "$CFG_FILENAME"
+
+TAG="$(echo "$BUILD_DIR" | tr / -)"
+
+for arg in $BUILD_ARGS; do
+	DOCKER_ARGS="$DOCKER_ARGS --build-arg=$arg"
+done
+
+BUILD_CONTEXT_ARGS=
+for arg in $BUILD_CONTEXTS; do
+	BUILD_CONTEXT_ARGS="$BUILD_CONTEXT_ARGS --build-context=$arg"
+done
+
+mkdir -p $(dirname "$DEST_FILENAME")
+if [ "$TYPE" = tar ]; then
+	docker build \
+		${ARCH:+--platform="$ARCH"} \
+		--tag="$TAG" \
+		--provenance=false \
+		$BUILD_CONTEXT_ARGS \
+		$DOCKER_ARGS \
+		--output=type=tar,dest="$DEST_FILENAME" \
+		"$BUILD_DIR"
+else
+	docker build \
+		--progress=plain \
+		${ARCH:+--platform="$ARCH"} \
+		--tag="$TAG" \
+		--provenance=false \
+		$BUILD_CONTEXT_ARGS \
+		$DOCKER_ARGS \
+		"$BUILD_DIR"
+
+	# Image remains in Docker image store, so use a sentinel file
+	docker image inspect --format='{{ .Id }}' "$TAG" > "$DEST_FILENAME"
+fi
+
+# Build file dependencies from the main context, automatically included by makrocosm/include.mk
+# Using a docker build (rather than e.g. find) is the easiest way to respect .dockerignore
+deps="$(printf "FROM scratch\nCOPY . /\n" \
+	| docker build -f- -o- \
+		$BUILD_CONTEXT_ARGS \
+		"$BUILD_DIR" \
+	| tar vt \
+	| awk '{ print $6 }')"
+
+echo > "$DEST_FILENAME.container.d"
+for file in '' $deps; do
+		file="${file%/}"
+	echo "$BUILD_DIR/$file:: ;" >> "$DEST_FILENAME.container.d"
+	echo "$DEST_FILENAME: $BUILD_DIR/$file" >> "$DEST_FILENAME.container.d"
+done
+
+for arg in $BUILD_CONTEXTS; do
+	echo >> "$DEST_FILENAME.container.d"
+	echo "# build context: $arg" >> "$DEST_FILENAME.container.d"
+	name="${arg%%=*}"
+	dir="${arg#*=}"
+
+	deps="$(printf "FROM scratch\nCOPY --from=$name . /\n" \
+		| docker build -f- -o- \
+			$BUILD_CONTEXT_ARGS \
+			"$BUILD_DIR" \
+		| tar vt \
+		| awk '{ print $6 }')"
+
+	for file in '' $deps; do
+		file="${file%/}"
+		echo "$dir/$file:: ;" >> "$DEST_FILENAME.container.d"
+		echo "$DEST_FILENAME: $dir/$file" >> "$DEST_FILENAME.container.d"
+	done
+done

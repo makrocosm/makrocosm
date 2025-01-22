@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# Build a FAT image from tar archive.
+#
+# Usage: makrocosm-tar2fat CFG TAR IMG
+#
+# Configuration:
+#   TYPE
+#   SIZE
+#   LABEL
+
+set -e
+[ "$VERBOSE" != 1 ] || set -x
+
+CFG="$(realpath "$1")"
+TAR="$(realpath "$2")"
+IMG="$(realpath "$3")"
+
+. "$CFG"
+if [ -z "$LABEL" ]; then
+  LABEL="$(basename "$IMG")"
+  LABEL="${LABEL%%.*}"
+fi
+
+case "$TYPE" in
+fat32) FAT_SIZE="-F 32" ;;
+fat16) FAT_SIZE="-F 16" ;;
+fat12) FAT_SIZE="-F 12" ;;
+'')    FAT_SIZE= ;;
+*)
+  echo "Invalid TYPE configuration: $TYPE" >&2
+  echo "TYPE must be empty to auto-select or one of fat32, fat16, fat12" >&2
+  exit 1
+  ;;
+esac
+
+dir="$(mktemp -d)"
+trap "rm -rf $dir" EXIT
+
+mkdir -p "$(dirname "$IMG")"
+dd if=/dev/zero of="$IMG" bs=1 count=0 seek="$SIZE"
+
+mkfs.vfat $FAT_SIZE -n "$LABEL" "$IMG"
+
+tar -xf "$TAR" -C "$dir"
+
+if [ "$(find "$dir" -maxdepth 1 -mindepth 1)" ]; then
+  echo "Copying files to FAT partition..." >&2
+  mcopy -spvi "$IMG" $dir/* ::/
+fi

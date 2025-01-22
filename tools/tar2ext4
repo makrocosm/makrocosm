@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# Build an ext4 image from tar archive.
+#
+# Usage: makrocosm-tar2ext4 CFG TAR IMG
+#
+# Configuration:
+#   SIZE
+#   LABEL
+
+set -e
+[ "$VERBOSE" != 1 ] || set -x
+
+CFG="$(realpath "$1")"
+TAR="$(realpath "$2")"
+IMG="$(realpath "$3")"
+
+. "$CFG"
+if [ -z "$LABEL" ]; then
+  LABEL="$(basename "$IMG")"
+  LABEL="${LABEL%%.*}"
+fi
+
+dd if=/dev/zero of="$IMG" bs=1 count=0 seek="$SIZE"
+mkfs.ext4 -d - -L "$LABEL" "$IMG" < "$TAR"

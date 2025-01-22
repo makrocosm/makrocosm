@@ -1,0 +1,92 @@
+#!/bin/sh
+#
+# Configuration:
+#   URL
+#   SHA256
+#   FORMAT
+#   EXTRACT
+#   STRIP
+
+set -e
+[ "$VERBOSE" != 1 ] || set -x
+
+TAR_FORMATS="tar tar.gz tar.bz2 tar.xz tgz"
+
+DEST="$1"
+CFG_FILENAME="$2"
+shift
+shift
+PATCHES="$@"
+
+. "$CFG_FILENAME"
+
+if [ -z "$URL" ]; then
+	echo "ERROR: Missing required configuration: URL" >&2
+	exit 1
+fi
+
+#
+# Download file
+#
+
+DOWNLOAD_FILENAME="build/download/$URL"
+DOWNLOAD_DIR="$(dirname "$DOWNLOAD_FILENAME")"
+if [ ! -f "$DOWNLOAD_FILENAME" ]; then
+	mkdir -p "$DOWNLOAD_DIR"
+	echo "Downloading $URL to $DOWNLOAD_FILENAME" >&2
+	curl -Lo "$DOWNLOAD_FILENAME" "$URL"
+else
+	echo "$URL has already been downloaded" >&2
+fi
+
+#
+# File integrity check
+#
+
+if [ "$SHA256" ]; then
+	CHECKSUM="$(sha256sum "$DOWNLOAD_FILENAME" | cut -d' ' -f1)"
+	if [ "$CHECKSUM" != "$SHA256" ]; then
+		echo "ERROR: SHA256 checksum mismatch for $DOWNLOAD_FILENAME" >&2
+		echo "Expected: $SHA256" >&2
+		echo "Actual:   $CHECKSUM" >&2
+		exit 1
+	fi
+	echo "Validated with SHA256 checksum" >&2
+fi
+
+#
+# tar detection
+#
+
+TAR=
+for EXT in $TAR_FORMATS; do
+	if [ "$EXT" = "$FORMAT" ] || [ -z "$FORMAT" -a "$DOWNLOAD_FILENAME" != "${DOWNLOAD_FILENAME%.$EXT}" ]; then
+		TAR=y
+		break
+	fi
+done
+
+rm -rf "$DEST"
+if [ "$TAR" = y -a "$EXTRACT" != n ]; then
+	# Extract tar into destination
+	mkdir -p "$DEST"
+	tar xf "$DOWNLOAD_FILENAME" --strip "${STRIP:-1}" -C "$DEST"
+
+	if [ "$?" != 0 ]; then
+		echo "ERROR: Failed to extracted archive to $DEST" >&2
+		exit 1
+	fi
+
+	echo "Extracted archive to $DEST" >&2
+else
+	# Copy archive into destination
+	cp "$DOWNLOAD_FILENAME" "$DEST"
+	echo "Copied downloaded file to $DEST" >&2
+fi
+
+for patch in $PATCHES; do
+	echo "Applying patch $patch" >&2
+	patch -d "$DEST" -p1 -i "$(pwd)/patch"
+done
+
+echo "download $URL $PATCHES" > "$DEST.src"

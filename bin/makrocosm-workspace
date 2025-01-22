@@ -1,0 +1,29 @@
+#!/bin/sh
+
+set -e
+[ "$VERBOSE_WORKSPACE" != 1 ] || set -x
+
+WORKSPACE_IMAGE="$1"
+shift
+
+if [ -z "$WORKSPACE_IMAGE" ] || ! docker image inspect "$WORKSPACE_IMAGE" 2>/dev/null 1>&2; then
+  exec "$@"
+  exit 1
+fi
+
+tty -s && TTY=-t || TTY=
+exec docker run -i $TTY \
+	--rm \
+	--network=host \
+	--workdir=/workspace \
+	--mount=type=bind,source="$(pwd)",target=/workspace \
+	--mount=type=bind,source=/tmp,target=/tmp \
+	--mount=type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
+	--group-add="$(getent group docker | cut -d: -f 3)" \
+	--user="$(id -u):$(id -g)" \
+	--group-add=sudo \
+	--env=HOME=/home \
+	--env=MKDISTRO_ROOT="$MKDISTRO_ROOT" \
+	--env=VERBOSE="$VERBOSE" \
+	"$WORKSPACE_IMAGE" \
+	"$@"

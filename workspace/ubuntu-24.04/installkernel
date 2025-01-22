@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# Basic "make install" script to avoid host distro behaviour
+#
+KERNEL_VERSION="$1"
+KERNEL_IMAGE_FILENAME="$2"
+KERNEL_MAP_FILENAME="$3"
+INSTALL_PATH="$4"
+
+cp -f "$KERNEL_IMAGE_FILENAME" "$INSTALL_PATH/$(basename "$KERNEL_IMAGE_FILENAME")"
+#cp -f "$KERNEL_MAP_FILENAME" "$INSTALL_PATH/System.map"
+
+sync

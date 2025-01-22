@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+# Configuration:
+#   URL
+#   REFNAME
+
+set -e
+[ "$VERBOSE" != 1 ] || set -x
+
+DEST_DIR="$1"
+CFG_FILENAME="$2"
+shift
+shift
+PATCHES="$@"
+
+. "$CFG_FILENAME"
+
+CLONE_DIR="build/git/$(echo "$URL" | sed 's|//|/|')"
+
+if [ -z "$URL" ]; then
+	echo "ERROR: missing required configuration: URL" >&2
+	exit 1
+elif [ -z "$REFNAME" ]; then
+	echo "ERROR: missing required configuration: REFNAME" >&2
+	exit 1
+fi
+
+if [ ! -d "$CLONE_DIR" ]; then
+	echo "Cloning from remote $URL into shared $CLONE_DIR" >&2
+	git clone "$URL" "$CLONE_DIR"
+fi
+	
+if [ -z "$(git -C "$CLONE_DIR" rev-list -n 1 "$REFNAME" --)" ]; then
+	echo "$REFNAME is not available in local shared repository. Fetching updates..." >&2
+	git -C "$CLONE_DIR" fetch
+fi
+
+echo "Cloning from local shared repository into target $DEST_DIR" >&2
+rm -rf "$DEST_DIR"
+git clone "$CLONE_DIR" "$DEST_DIR"
+git -C "$DEST_DIR" checkout "$REFNAME"
+
+for patch in $PATCHES; do
+	echo "Applying patch $patch" >&2
+	git -C "$DEST_DIR" am "$(pwd)/$patch" || patch -d "$DEST_DIR" -p1 -i "$(pwd)/$patch"
+done
+
+echo "git $URL $REFNAME $PATCHES" > "$DEST_DIR.src"

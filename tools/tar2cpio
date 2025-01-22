@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+# Build a CPIO image from tar archive.
+#
+# Usage: tar2cpio TAR CPIO
+#
+
+set -e
+[ "$VERBOSE" != 1 ] || set -x
+
+TAR="$(realpath "$1")"
+CPIO="$(realpath "$2")"
+
+# TODO: Make this configurable
+FORMAT=newc
+
+dir="$(mktemp -d)"
+trap "rm -rf $dir" EXIT
+cd "$dir"
+
+fakeroot <<EOF
+cpio -imV --no-absolute-filenames < "$TAR"
+
+# Regular files extracted mask char devices, so fix the
+# console so we can see stdout/stderr before mounting /dev
+mknod dev/console c 5 1
+chmod 666 dev/console
+
+find . | cpio -oV -H "$FORMAT" > "$CPIO"
+EOF

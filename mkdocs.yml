@@ -1,0 +1,38 @@
+site_name: Makrocosm
+site_url: https://makrocosm.github.io/makrocosm
+repo_url: https://github.com/makrocosm/makrocosm
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme)"
+      primary: deep orange
+      accent: orange
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep orange
+      accent: orange
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep orange
+      accent: orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+copyright: Copyright &copy; 2025 Samuel Brian
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/makrocosm/makrocosm
+
+markdown_extensions:
+  - tables
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences

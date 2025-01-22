@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# Build a SquashFS image from tar archive.
+#
+# Usage: makrocosm-tar2sqfs CFG TAR IMG
+#
+# Configuration:
+#   COMPRESSION
+
+set -e
+[ "$VERBOSE" != 1 ] || set -x
+
+CFG="$(realpath "$1")"
+TAR="$(realpath "$2")"
+IMG="$(realpath "$3")"
+
+. "$CFG"
+COMPRESSION="${COMPRESSION:-zstd}"
+
+sqfstar -force -comp "$COMPRESSION" "$IMG" < "$TAR"

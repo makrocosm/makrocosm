@@ -1,0 +1,214 @@
+#!/bin/sh
+
+set -e
+[ "$VERBOSE" != 1 ] || set -x
+
+usage() {
+  echo
+  echo "makrocosm-disk"
+  echo "--------------"
+  echo "Create and populate raw disk images with an MBR or GPT partition table"
+  echo
+  echo "usage: makrocosm-disk DISK_IMAGE COMMAND [ARGS...]"
+  echo
+  echo "Commands:"
+  echo
+  echo "makrocosm-disk DISK_IMAGE create SIZE"
+  echo "  Create empty file DISK_IMAGE with the given SIZE (e.g. '1GB')"
+  echo
+  echo "makrocosm-disk DISK_IMAGE table TABLE_TYPE"
+  echo "  Write partition table of type 'msdos' (MBR) or 'gpt' (GPT) to the disk image"
+  echo
+  echo "makrocosm-disk DISK_IMAGE partition LABEL PARTITION_IMAGE"
+  echo "  Append partition PARTITION_IMAGE to the disk image, with LABEL (GPT only)"
+  echo
+  echo "makrocosm-disk DISK_IMAGE write FILE OFFSET"
+  echo "  Write FILE into the disk image at at position OFFSET (e.g. '8MiB')"
+  echo
+  echo "makrocosm-disk DISK_IMAGE info"
+  echo "  Print the partition layout of the disk image"
+  echo
+  echo "Example:"
+  echo
+  echo "makrocosm-disk build/disk.img create 1GB"
+  echo "makrocosm-disk build/disk.img table gpt"
+  echo "makrocosm-disk build/disk.img partition image1 build/rootfs.sqfs"
+  echo
+}
+
+if [ "$#" -lt 1 ]; then
+  echo 'ERROR: DISK_FILENAME argument required' >&2
+  usage >&2
+  exit 1
+fi
+DISK="$1"
+shift
+
+if [ "$#" -lt 1 ]; then
+  echo 'ERROR: CMD argument required' >&2
+  usage >&2
+  exit 1
+fi
+CMD="$1"
+shift
+
+SECTOR_SIZE=512B
+
+calc_bytes() {
+  units -t -o '%.100g' "$1" B
+}
+
+num_sectors() {
+  # Assuming this will have a sector size of 512B
+  units -t "$1 / $SECTOR_SIZE" #| awk '{print int($0) }'
+}
+
+canonicalize_size() {
+  # Append "iB" if doesn't end with a "B" e.g. "MiB" or "MB"
+  if [ "${1%b}" = "$1" -a "${1%B}" = "$1" ]; then
+    echo "${1}iB"
+  else
+    echo "$1"
+  fi
+}
+
+last_partition_end() {
+  local end="$(parted --script -- "$DISK" unit b print  | sed '/^$/d' | tail -1 | awk '{ print $3 }')"
+  if [ -z "$end" -o "$end" = End ]; then
+    # First partition. Can't start at sector 0
+    #end=16896B # Minimum 34 sectors
+  end="$(calc_bytes "1MiB - 1B")B" # Leave 1MiB (quiets alignment warnings)
+  fi
+
+  echo "$end"
+}
+
+last_partition_index() {
+  parted --script -- "$DISK" print | sed '/^$/d' | tail -1 | awk '{ if ($1 == "Number") print "0"; else print $1; }'
+}
+
+get_table_type() {
+  parted --script -- "$DISK" print | sed -rn 's/Partition Table: //p'
+}
+
+subcmd_create() {
+  if [ "$#" -lt 1 ]; then
+    echo 'ERROR: SIZE argument required for create command' >&2
+    usage >&2
+    exit 1
+  fi
+  SIZE="$(canonicalize_size "$1")"
+  dd if=/dev/zero of="$DISK" bs=1 count=0 seek="$SIZE"
+}
+
+subcmd_table() {
+  if [ "$#" -lt 1 ]; then
+    echo 'ERROR: TABLE_TYPE argument required for table command' >&2
+    usage >&2
+    exit 1
+  fi
+  TABLE_TYPE="$1"
+  parted --script -- "$DISK" mklabel "$TABLE_TYPE"
+}
+
+subcmd_partition() {
+  if [ "$#" -lt 1 ]; then
+    echo 'ERROR: LABEL argument required for partition command' >&2
+    usage >&2
+    exit 1
+  fi
+  LABEL="$1"
+  shift
+  
+  if [ "$#" -lt 1 ]; then
+    echo 'ERROR: PARTITION_IMAGE argument required for partition command' >&2
+    usage >&2
+    exit 1
+  fi
+  PARTITION_IMAGE="$1"
+  shift
+  # Remaining args are flags to set on partition
+
+  PARTITION_SIZE="$(wc -c < "$PARTITION_IMAGE")B"
+
+  if [ "$PARTITION_OFFSET" ]; then
+    part_start="$(canonicalize_size "${PARTITION_OFFSET:-1MiB}")"
+  else
+    part_start="$(calc_bytes "$(last_partition_end) + 1B")B"
+  fi
+
+  if [ "$(get_table_type)" = msdos ]; then
+    # If there will be more than 4 partitions in an msdos table, the 4th
+    # partition needs to be an extended partition which will hold the
+    # remaining as logical partitions.
+    # When adding the 4th we don't know if there will be a 5th, so go
+    # ahead and assume there will be.
+
+    part_index="$(last_partition_index)"
+    if [ "$part_index" = 3 ]; then
+      parted --script -- "$DISK" mkpart extended "$part_start" 100%
+    fi
+
+    if [ "$part_index" -ge 3 ]; then
+      part_type=logical
+      part_start="$(calc_bytes "$part_start + 1MiB")B"
+    else
+      part_type=primary
+    fi
+  else
+    part_type=primary
+  fi
+
+  part_end="$(calc_bytes "$part_start + $PARTITION_SIZE - 1B")B"
+  parted --script -- "$DISK" mkpart "$part_type" "$part_start" "$part_end"
+  part_index="$(last_partition_index)"
+
+  # Only gpt supports label, so ignore failure
+  parted --script -- "$DISK" name "$part_index" "$LABEL" 2>/dev/null || true
+
+  # Write the image to the new partition
+  dd if="$PARTITION_IMAGE" of="$DISK" conv=notrunc bs="$(calc_bytes "$SECTOR_SIZE")" seek="$(num_sectors "$part_start")"
+
+  for flag in "$@"; do
+    parted --script -- "$DISK" set "$part_index" "$flag" on
+  done
+}
+
+subcmd_write() {
+  if [ "$#" -lt 1 ]; then
+    echo 'ERROR: FILE argument required for write command' >&2
+    usage >&2
+    exit 1
+  fi
+  FILE="$1"
+  shift
+
+  if [ "$#" -lt 1 ]; then
+    echo 'ERROR: OFFSET argument required for write command' >&2
+    usage >&2
+    exit 1
+  fi
+  OFFSET="$(canonicalize_size "$1")"
+  shift
+
+  FILE_SIZE="$(wc -c < "$FILE")B"
+  dd if="$FILE" of="$DISK" conv=notrunc bs="$(calc_bytes "$SECTOR_SIZE")" seek="$(num_sectors "$OFFSET")"
+}
+
+subcmd_info() {
+  parted --script -- "$DISK" print
+}
+
+case "$CMD" in
+  create) subcmd_create "$@" ;;
+  table) subcmd_table "$@" ;;
+  partition) subcmd_partition "$@" ;;
+  write) subcmd_write "$@" ;;
+  info) subcmd_info "$@" ;;
+  *)
+    echo "ERROR: Invalid command: $CMD" >&2
+    usage >&2
+    exit 1
+    ;;
+esac
+
