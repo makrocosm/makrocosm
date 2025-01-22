@@ -1,7 +1,7 @@
 # Getting started
 
 This page shows how to set up a new project that uses Makrocosm.
-The [Makrocosm example project](https://www.github.com/makrocosm/makrocosm-example-project)
+The [Makrocosm example project](https://www.github.com/makrocosm/example-project)
 is also available as a reference.
 
 ## Prerequisites

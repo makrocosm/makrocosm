@@ -84,7 +84,7 @@ The following options are valid in the `${dir}/linux.cfg` configuration file.
 ## Example
 
 This example shows configuration for the kernel built for the
-[Makrocosm Example Project's Alpine Orange Pi One image](https://www.github.com/makrocosm/makrocosm-example-project/tree/master/alpine/orangepi-one).
+[Makrocosm Example Project's Alpine Orange Pi One image](https://github.com/makrocosm/example-project/tree/main/alpine/orangepi-one).
 
 The `linux.cfg` configuration sets the cross-compilation options for ARM,
 the kernel configuration for the Orange Pi One's CPU family (`sunxi`) and

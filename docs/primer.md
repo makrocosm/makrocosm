@@ -104,10 +104,10 @@ hard drives and SD cards.
 
 To simplify setup of dependencies on the host system, the dependencies are
 installed in a Ubuntu 24.04 container image (default, see 
-[available workspaces](https://github.com/makrocosm/makrocosm/blob/master/src/workspace)).
+[available workspaces](https://github.com/makrocosm/makrocosm/tree/main/workspace)).
 
 Each shell command in Makefile recipes is run in a container using the
-[makrocosm-workspace](https://github.com/makrocosm/makrocosm/blob/master/src/bin/makrocosm-workspace)
+[makrocosm-workspace](https://github.com/makrocosm/makrocosm/blob/main/bin/makrocosm-workspace)
 command, which passes through necessary host system resources such as the
 caller's UID/GID, the project root directory, and the Docker Unix domain
 socket.

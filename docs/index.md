@@ -12,7 +12,7 @@ It defines a Makefile project structure and rules that let you:
 
 Projects using Makrocosm:
 
-  - [Makrocosm example project](https://www.github.com/makrocosm/makrocosm-example-project) - Alpine-based example firmware images with read-only rootfs and A/B partition firmware updating.
+  - [Makrocosm example project](https://www.github.com/makrocosm/example-project) - Alpine-based example firmware images with read-only rootfs and A/B partition firmware updating.
     * x86-64 target, with BIOS and EFI Grub bootloaders
     * Orange Pi One target, with u-boot bootloader
 
