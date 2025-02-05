@@ -190,9 +190,9 @@ build/%.cpio: build/%.tar
 ###############################################################################
 
 .PRECIOUS: build/%.qcow2
-build/%.qcow2: build/%.raw
+build/%.qcow2: build/%.img
 	@echo "----------------------------------------------------------"
-	@echo "[$*] Converting raw disk to qcow2"
+	@echo "[$*] Converting raw disk image to qcow2"
 	@echo "----------------------------------------------------------"
 	$(AT)qemu-img convert -f raw -O qcow2 "$<" "$@"
 
