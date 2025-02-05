@@ -10,6 +10,7 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
       gcc-x86-64-linux-gnux32 gcc-arm-linux-gnueabi gcc-aarch64-linux-gnu \
       build-essential flex bison bc libelf-dev libssl-dev kmod \
       python3 python3-dev python3-pip python3-setuptools swig \
+      libgnutls28-dev \
       # download \
       ca-certificates curl \
       # tar2fat \
