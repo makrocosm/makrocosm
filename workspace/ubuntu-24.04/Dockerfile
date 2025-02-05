@@ -39,7 +39,8 @@ RUN mkdir -p /tmp/e2fsprogs \
   && curl -fsSLo ./src.tar.gz https://github.com/tytso/e2fsprogs/archive/refs/tags/v1.47.1.tar.gz \
   && tar zxf src.tar.gz --strip-components=1 \
   && ./configure \
-  && make && make install
+  && make -j && make install \
+  && rm -rf /tmp/e2fsprogs
 
 #ARG DOCKER_GID
 #RUN groupadd -o -g $DOCKER_GID docker
