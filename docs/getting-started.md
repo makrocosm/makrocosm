@@ -14,7 +14,7 @@ Using Makrocosm requires the following packages to be installed:
 
 !!! tip "Important"
 
-    The version of Docker that might be available from your host distribution's
+    The version of Docker that is available from your host distribution's
     package repository might be outdated.
     Follow [these instructions to install Docker Engine](https://docs.docker.com/engine/install/),
     then [give your user permission to use Docker](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user),
