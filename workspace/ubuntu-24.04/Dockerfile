@@ -22,7 +22,7 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
       # tar2ext4 \
       libarchive-dev \
       # disk \
-      parted \
+      parted fdisk file \
       # qcow2 \
       qemu-utils \
       # bmaptool \

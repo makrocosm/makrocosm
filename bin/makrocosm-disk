@@ -166,6 +166,18 @@ subcmd_partition() {
   # Only gpt supports label, so ignore failure
   parted --script -- "$DISK" name "$part_index" "$LABEL" 2>/dev/null || true
 
+  if [ -z "$FS_TYPE" ]; then
+    # Guess MS-DOS partition type
+    case "$(file "$PARTITION_IMAGE")" in
+      *FAT*"(32 bit)"*) FS_TYPE='W95 FAT32' ;;
+      *FAT*"(16 bit)"*) FS_TYPE='W95 FAT16' ;;
+      *FAT*"(12 bit)"*) FS_TYPE='FAT12' ;;
+      *)                FS_TYPE=Linux ;;
+    esac
+  fi
+  # Only msdos supports partition type, so ignore failure
+  sfdisk --part-type "$DISK" "$part_index" "$FS_TYPE" || true
+
   # Write the image to the new partition
   dd if="$PARTITION_IMAGE" of="$DISK" conv=notrunc bs="$(calc_bytes "$SECTOR_SIZE")" seek="$(num_sectors "$part_start")"
 
