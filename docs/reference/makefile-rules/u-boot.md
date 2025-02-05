@@ -52,6 +52,11 @@ The following options are valid in the `${dir}/u-boot.cfg` configuration file.
   - `DEFCONFIG` - *Optional* - The stem of the platform's defconfig file, e.g. `sunxi` for
     the `orangepi_one` available for the ARM architecture.
     Equivalent to `make ${platform}_defconfig` in u-boot's build system.
+  - `INSTALL_FILENAMES` - *Optional* - A space-separated list of filenames of
+    the build artifacts that will be copied from the build directory
+    `build/${dir}/u-boot` to the install target directory
+    `build/${dir}/u-boot/install`.
+    Default: `u-boot.bin`.
 
 !!! note
     The interactive workspace shell can used to discover the available

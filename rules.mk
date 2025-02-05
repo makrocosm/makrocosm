@@ -132,13 +132,17 @@ build/%/linux/.config: %/linux.cfg build/%/linux.src
 
 .PRECIOUS: build/%/u-boot/install
 build/%/u-boot/install: %/u-boot.cfg build/%/u-boot.src build/%/u-boot/.config
+	$(AT)rm -rf "$@"
+	$(AT)mkdir -p "$@"
 	$(AT). "./$*/u-boot.cfg" \
 		&& make -j 4 -C "build/$*/u-boot" \
 			ARCH=$${ARCH} \
 			CROSS_COMPILE=$${CROSS_COMPILE} \
 			olddefconfig \
-			all
-	$(AT)touch "$@"
+			all \
+		&& for f in $${INSTALL_FILENAMES:-u-boot.bin}; do \
+			cp -f build/$*/u-boot/$$f build/$*/u-boot/install ; \
+		done
 
 .PRECIOUS: build/%/u-boot/.config
 build/%/u-boot/.config: %/u-boot.cfg build/%/u-boot.src
