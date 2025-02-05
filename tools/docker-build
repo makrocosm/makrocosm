@@ -30,6 +30,7 @@ done
 mkdir -p $(dirname "$DEST_FILENAME")
 if [ "$TYPE" = tar ]; then
 	docker build \
+		--progress=plain \
 		${ARCH:+--platform="$ARCH"} \
 		--tag="$TAG" \
 		--provenance=false \
