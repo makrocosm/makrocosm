@@ -124,7 +124,7 @@ build/%/linux/.config: %/linux.cfg build/%/linux.src
 	$(AT). "./$*/linux.cfg" \
 		&& build/$*/linux/scripts/kconfig/merge_config.sh -m -n -r -y -O "$(dir $@)" \
 			$${DEFCONFIG:+build/$*/linux/arch/$${ARCH}/configs/$${DEFCONFIG}_defconfig} \
-			$(fildefine ter %.kconfig,$^)
+			$(filter %.kconfig,$^)
 
 ###############################################################################
 ## u-boot bootloader
