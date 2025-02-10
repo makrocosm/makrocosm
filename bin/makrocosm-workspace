@@ -11,8 +11,12 @@ if [ -z "$WORKSPACE_IMAGE" ] || ! docker image inspect "$WORKSPACE_IMAGE" 2>/dev
   exit 1
 fi
 
+envfile="$(mktemp)"
+trap 'rm $envfile' EXIT
+env | egrep -v '^[^=]*PATH=' > "$envfile"
+
 tty -s && TTY=-t || TTY=
-exec docker run -i $TTY \
+docker run -i $TTY \
 	--rm \
 	--network=host \
 	--workdir=/workspace \
@@ -22,8 +26,7 @@ exec docker run -i $TTY \
 	--group-add="$(getent group docker | cut -d: -f 3)" \
 	--user="$(id -u):$(id -g)" \
 	--group-add=sudo \
+	--env-file="$envfile" \
 	--env=HOME=/home \
-	--env=MKDISTRO_ROOT="$MKDISTRO_ROOT" \
-	--env=VERBOSE="$VERBOSE" \
 	"$WORKSPACE_IMAGE" \
 	"$@"
