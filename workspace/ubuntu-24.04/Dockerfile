@@ -50,7 +50,7 @@ COPY installkernel /sbin/installkernel
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-RUN chown -R ubuntu /home
+RUN chown -R ubuntu:ubuntu /home && chmod 777 /home
 USER ubuntu
 
 WORKDIR /workspace
