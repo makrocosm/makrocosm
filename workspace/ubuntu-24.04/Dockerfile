@@ -36,7 +36,7 @@ RUN pip install --break-system-packages mkdocs mkdocs-material
 # e2fsprogs v1.47.1 or later is required for tar input support
 RUN mkdir -p /tmp/e2fsprogs \
   && cd /tmp/e2fsprogs \
-  && curl -fsSLo ./src.tar.gz https://github.com/tytso/e2fsprogs/archive/refs/tags/v1.47.1.tar.gz \
+  && curl -fsSLo ./src.tar.gz https://github.com/tytso/e2fsprogs/archive/refs/tags/v1.47.2.tar.gz \
   && tar zxf src.tar.gz --strip-components=1 \
   && ./configure \
   && make -j && make install \
