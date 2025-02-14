@@ -141,7 +141,7 @@ build/%/u-boot/install: %/u-boot.cfg build/%/u-boot.src build/%/u-boot/.config
 			olddefconfig \
 			all \
 		&& for f in $${INSTALL_FILENAMES:-u-boot.bin}; do \
-			cp -f build/$*/u-boot/$$f build/$*/u-boot/install ; \
+			cp -rf build/$*/u-boot/$$f build/$*/u-boot/install ; \
 		done
 
 .PRECIOUS: build/%/u-boot/.config
