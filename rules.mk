@@ -114,7 +114,7 @@ build/%/linux/install: %/linux.cfg build/%/linux.src build/%/linux/.config
 			$${INSTALL_TARGET:-install} \
 			modules_install \
 		&& for f in $${DTB}; do \
-			cp -f build/$*/linux/arch/$${ARCH}/boot/dts/$$f build/$*/linux/install/boot/ ; \
+			cp -rf build/$*/linux/arch/$${ARCH}/boot/dts/$$f build/$*/linux/install/boot/ ; \
 		done
 	$(AT)rm -f build/$*/linux/install/lib/modules/*/build
 	$(AT)touch "$@"
