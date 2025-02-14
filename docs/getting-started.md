@@ -72,6 +72,7 @@ Run with "make VERBOSE=1 ..." to see make and tool trace
 
   help: Display this help
   deps: Install dependencies
+  tftpboot: Run a tftp server providing files from the build directory
   shell: Enter a shell in the workspace container
   clean: Remove built artifacts from the build directory
   distclean: Remove the build directory
