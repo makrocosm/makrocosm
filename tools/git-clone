@@ -25,6 +25,15 @@ elif [ -z "$REFNAME" ]; then
 	exit 1
 fi
 
+if [ "$MAKROCOSM_GIT_CLONE_SHALLOW" = 1 ]; then
+	# In some environments (e.g. CI build pipeline) we don't care about shared
+	# git repo with the entire history. Shallow clone the repo.
+	echo "Shallow cloning from remote $URL into target $DEST_DIR" >&2
+	rm -rf "$DEST_DIR"
+	git clone --depth=1 --branch "$REFNAME" "$URL" "$DEST_DIR"
+	exit 0
+fi
+
 if [ ! -d "$CLONE_DIR" ]; then
 	echo "Cloning from remote $URL into shared $CLONE_DIR" >&2
 	git clone "$URL" "$CLONE_DIR"
