@@ -71,10 +71,11 @@ using other rules.
 
 The following options are valid in the `${path}.container.cfg` configuration file.
 
-   - `ARCH` - *Required* - The architecture (for tar export) or comma
+   - `ARCH` - *Optional* - The architecture (for tar export) or comma
      separated list of architectures (for container store) to build the
      container image for.
      See output of `make deps` for supported architectures.
+     Default: the host architecture.
    - `BUILD_CONTEXTS` - *Optional* - Space separated list of `NAME=PATH` [build contexts](https://docs.docker.com/reference/cli/docker/buildx/build/#build-context)
       that are made available in the Dockerfile.
    - `BUILD_ARGS` - *Optional* - Space separated list of `KEY=VALUE` [build variables](https://docs.docker.com/reference/cli/docker/buildx/build/#build-arg)
