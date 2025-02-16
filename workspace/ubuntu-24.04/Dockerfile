@@ -22,13 +22,11 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
       # tar2ext4 \
       libarchive-dev \
       # disk \
-      parted fdisk file \
+      parted fdisk file units \
       # qcow2 \
       qemu-utils \
       # bmaptool \
-      bmap-tools \
-      # misc \
-      units qemu-system
+      bmap-tools
 
 
 RUN pip install --break-system-packages mkdocs mkdocs-material
