@@ -48,7 +48,7 @@ _ := $(shell make --quiet WORKSPACE= build/$(WORKSPACE) >&2)
 
 # Run recipe commands in the workspace container shell, but falls back
 # to the host environment if the workspace image is not available.
-SHELL = $(MKDISTRO_ROOT)/bin/makrocosm-workspace $(WORKSPACE_IMAGE) /bin/sh
+SHELL = $(MKDISTRO_ROOT)/bin/makrocosm-workspace $(DOCKER_TAG_PREFIX)$(WORKSPACE_IMAGE) /bin/sh
 
 endif
 

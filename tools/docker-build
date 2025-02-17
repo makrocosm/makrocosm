@@ -5,6 +5,7 @@
 #   BUILD_CONTEXTS
 #   BUILD_ARGS
 #   DOCKER_ARGS
+#   DOCKER_TAG_PREFIX
 
 set -e
 [ "$VERBOSE" != 1 ] || set -x
@@ -16,7 +17,7 @@ DEST_FILENAME="$4"
 
 . "$CFG_FILENAME"
 
-TAG="$(echo "$BUILD_DIR" | tr / -)"
+TAG="${DOCKER_TAG_PREFIX}$(echo "$BUILD_DIR" | tr / -)"
 
 for arg in $BUILD_ARGS; do
 	DOCKER_ARGS="$DOCKER_ARGS --build-arg=$arg"

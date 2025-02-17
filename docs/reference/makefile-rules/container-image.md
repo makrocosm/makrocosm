@@ -31,7 +31,8 @@ is updated.
 The name of the created container image is derived from the target `${path}`,
 where path separators `/` are replaced with hyphens `-`.
 For example, targeting `build/common/rootfs` will create the container image
-named `common-rootfs`.
+named `common-rootfs`. The value of the `DOCKER_TAG_PREFIX` configuration option
+is prepended to this name.
 
 This container image can be referenced by other Dockerfiles in `FROM` and
 `COPY --from` statements, however the dependency on the target sentinel file
@@ -82,3 +83,5 @@ The following options are valid in the `${path}.container.cfg` configuration fil
      that are made available in the Dockerfile.
    - `DOCKER_ARGS` - *Optional* - Extra arguments to pass to the
      `docker build` command.
+   - `DOCKER_TAG_PREFIX` - *Optional* - Prefix to use on the resulting Docker
+     image tag during export to the container store.
