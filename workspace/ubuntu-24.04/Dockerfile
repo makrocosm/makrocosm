@@ -40,16 +40,15 @@ RUN mkdir -p /tmp/e2fsprogs \
   && make -j && make install \
   && rm -rf /tmp/e2fsprogs
 
-#ARG DOCKER_GID
-#RUN groupadd -o -g $DOCKER_GID docker
 RUN curl -fsSL https://get.docker.com  | sudo /bin/sh
 
+# Linux kernel install script
 COPY installkernel /sbin/installkernel
+
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-RUN chown -R ubuntu:ubuntu /home && chmod 777 /home
-USER ubuntu
+RUN chmod 777 /home
 
 WORKDIR /workspace
 
