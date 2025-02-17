@@ -61,14 +61,14 @@ build/%.src: %.git.cfg
 	@echo "---------------------------------------------------- -----"
 	@. "./$*.git.cfg" && echo "Checking out $$URL @ $$REFNAME"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/git-clone "build/$*" "$*.git.cfg" $(filter %.patch,$^)
+	$(AT)$(MKDISTRO_ROOT)/tools/git-clone "build/$*" "./$*.git.cfg" $(filter %.patch,$^)
 
 .PRECIOUS: build/%.src
 build/%.src: %.download.cfg
 	@echo "---------------------------------------------------- -----"
 	@. "./$*.download.cfg" && echo "Downloading $$URL"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/download "build/$*" "$*.download.cfg" $(filter %.patch,$^)
+	$(AT)$(MKDISTRO_ROOT)/tools/download "build/$*" "./$*.download.cfg" $(filter %.patch,$^)
 
 
 ###############################################################################
@@ -80,14 +80,14 @@ build/% build/%.d: %.container.cfg
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Building container image"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/docker-build store "$*.container.cfg" "$*" "$@"
+	$(AT)$(MKDISTRO_ROOT)/tools/docker-build store "./$*.container.cfg" "$*" "$@"
 
 .PRECIOUS: build/%.tar build/%.tar.d
 build/%.tar build/%.tar.d: %.container.cfg
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Building container image to tar export"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/docker-build tar "$*.container.cfg" "$*" "$@"
+	$(AT)$(MKDISTRO_ROOT)/tools/docker-build tar "./$*.container.cfg" "$*" "$@"
 
 -include $(shell find -type f -iname '*.container.d')
 
@@ -161,21 +161,21 @@ build/%.sqfs: %.sqfs.cfg build/%.tar
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Converting tar to squashfs image"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/tar2sqfs "$*.sqfs.cfg" "build/$*.tar" "$@"
+	$(AT)$(MKDISTRO_ROOT)/tools/tar2sqfs "./$*.sqfs.cfg" "build/$*.tar" "$@"
 
 .PRECIOUS: build/%.ext4
 build/%.ext4: %.ext4.cfg build/%.tar
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Converting tar to ext4 image"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/tar2ext4 "$*.ext4.cfg" "build/$*.tar" "$@"
+	$(AT)$(MKDISTRO_ROOT)/tools/tar2ext4 "./$*.ext4.cfg" "build/$*.tar" "$@"
 
 .PRECIOUS: build/%.fat
 build/%.fat: %.fat.cfg build/%.tar
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Converting tar to FAT image"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/tar2fat "$*.fat.cfg" "build/$*.tar" "$@"
+	$(AT)$(MKDISTRO_ROOT)/tools/tar2fat "./$*.fat.cfg" "build/$*.tar" "$@"
 		
 .PRECIOUS: build/%.cpio
 build/%.cpio: build/%.tar
@@ -258,7 +258,7 @@ build/%.pad: %.pad.cfg build/%
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Padding file"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/pad "$*.pad.cfg" "build/$*" "$@"
+	$(AT)$(MKDISTRO_ROOT)/tools/pad "./$*.pad.cfg" "build/$*" "$@"
 
 
 ###############################################################################
