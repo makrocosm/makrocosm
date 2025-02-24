@@ -169,7 +169,7 @@ subcmd_partition() {
   if [ -z "$FS_TYPE" ]; then
     # Guess MS-DOS partition type
     case "$(file "$PARTITION_IMAGE")" in
-      *FAT*"(32 bit)"*) FS_TYPE='FAT32' ;;
+      *FAT*"(32 bit)"*) FS_TYPE='W95 FAT32' ;;
       *FAT*"(16 bit)"*) FS_TYPE='FAT16' ;;
       *FAT*"(12 bit)"*) FS_TYPE='FAT12' ;;
       *)                FS_TYPE=Linux ;;
