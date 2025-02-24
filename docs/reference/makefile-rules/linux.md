@@ -84,13 +84,13 @@ The following options are valid in the `${dir}/linux.cfg` configuration file.
 ## Example
 
 This example shows configuration for the kernel built for the
-[Makrocosm Example Project's Alpine Orange Pi One image](https://github.com/makrocosm/example-project/tree/main/alpine/orangepi-one).
+[Makrocosm Example Project's Alpine Orange Pi One image](https://github.com/makrocosm/example-project/tree/main/platform/opi1).
 
 The `linux.cfg` configuration sets the cross-compilation options for ARM,
 the kernel configuration for the Orange Pi One's CPU family (`sunxi`) and
 device tree for the Orange Pi One platform.
 
-```sh title="alpine/orangepi-one/linux.cfg"
+```sh title="platform/opi1/linux.cfg"
 ARCH=arm
 CROSS_COMPILE=arm-linux-gnueabi-
 DEFCONFIG=sunxi
@@ -102,7 +102,7 @@ The `linux.git.cfg` configuration defines the Git repository where the kernel
 source tree can be cloned from, and the version tag to use
 (See the [Clone Git repository](file-fetch.md#clone-git-repository) Makefile rule).
 
-```sh title="alpine/orangepi-one/linux.git.cfg"
+```sh title="platform/opi1/linux.git.cfg"
 URL=git@github.com:torvalds/linux.git
 REFNAME=v6.10
 ```
@@ -112,15 +112,15 @@ The Makefile fragment adds a `filesystem.kconfig` dependency to the
 extra SquashFS and OverlayFS options into the nominated defconfig to create
 the `.config`.
 
-```make title="alpine/orangepi-one/build.mk"
+```make title="platform/opi1/build.mk"
 ...
 
-build/alpine/orangepi-one/linux/.config: alpine/common/linux/filesystems.kconfig
+build/platform/opi1/linux/.config: common/alpine/linux/filesystems.kconfig
 
 ...
 ```
 
-```sh title="alpine/common/linux/filesystems.kconfig"
+```sh title="common/alpine/linux/filesystems.kconfig"
 CONFIG_SQUASHFS=y
 CONFIG_SQUASHFS_XZ=y
 CONFIG_SQUASHFS_ZSTD=y
@@ -128,10 +128,10 @@ CONFIG_OVERLAY_FS=m
 ```
 
 The `.config` is a dependency of the `linux/install` target.
-Running the command `make build/alpine/orangepi-one/linux/install` selectively
+Running the command `make build/platform/opi1/linux/install` selectively
 builds the kernel installs it to that directory:
 
-``` title="build/alpine/orangepi-one/linux/install"
+``` title="build/platform/opi1/linux/install"
 ├── boot
 │   ├── sun8i-h3-orangepi-one.dtb
 │   └── zImage

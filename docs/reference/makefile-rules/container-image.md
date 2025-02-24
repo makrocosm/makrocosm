@@ -30,8 +30,8 @@ is updated.
 
 The name of the created container image is derived from the target `${path}`,
 where path separators `/` are replaced with hyphens `-`.
-For example, targeting `build/common/rootfs` will create the container image
-named `common-rootfs`. The value of the `DOCKER_TAG_PREFIX` configuration option
+For example, targeting `build/common/alpine/rootfs` will create the container image
+named `base-alpine-rootfs`. The value of the `DOCKER_TAG_PREFIX` configuration option
 is prepended to this name.
 
 This container image can be referenced by other Dockerfiles in `FROM` and
@@ -39,18 +39,18 @@ This container image can be referenced by other Dockerfiles in `FROM` and
 must be added explicitly.
 For example, for the following Dockerfile:
 
-```Dockerfile title="x64/rootfs/Dockerfile"
-FROM common-rootfs
+```Dockerfile title="platform/x64/rootfs/Dockerfile"
+FROM base-alpine-rootfs
 ```
 
 The dependency must be added to the Makefile as below:
 
 ```make
 # For container image in store
-build/x64/rootfs: build/common/rootfs
+build/platform/x64/rootfs: build/common/alpine/rootfs
 
 # For container image exported to tar
-build/x64/rootfs.tar: build/common/rootfs
+build/platform/x64/rootfs.tar: build/common/alpine/rootfs
 ```
 
 When using the [containerd image store](https://docs.docker.com/engine/storage/containerd/)
