@@ -13,7 +13,7 @@ It defines a Makefile project structure and rules that let you:
 Projects using Makrocosm:
 
   - [Makrocosm example project](https://www.github.com/makrocosm/example-project)
-    - Alpine-based example firmware images for x64, Orange Pi One, and Raspberry Pi 3 and 4
+    - Alpine-based example firmware images for x64, Orange Pi One, Raspberry Pi 3 and 4, and the BeagleBoard BeaglePlay.
     - Demonstrates read-only rootfs, A/B partition firmware updating, cross-compiling applications, and u-boot and Grub bootloaders.
 
 ## Comparison

@@ -14,6 +14,8 @@ The Makrocosm documentation is available at [https://makrocosm.github.io/makroco
 
 Projects using Makrocosm:
 
-  - [Makrocosm example project](https://www.github.com/makrocosm/example-project) - Alpine-based example firmware images with read-only rootfs and A/B partition firmware updating.
-    * x86-64 target, with BIOS and EFI Grub bootloaders
-    * Orange Pi One target, with u-boot bootloader
+  - [Makrocosm example project](https://www.github.com/makrocosm/example-project) - Alpine-based example firmware images with read-only rootfs, A/B partition firmware updating, Grub and u-boot bootloader examples.
+    * Generic x86-64
+    * Orange Pi One
+    * Raspberry Pi 3 and 4
+    * BeagleBoard BeaglePlay
