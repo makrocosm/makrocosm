@@ -51,6 +51,7 @@ Makrocosm's Makefile rules are indexed in the following table:
 | `build/${path}/linux/.config`  | `${path}/linux.cfg` `build/${path}/linux.src` `*.kconfig` | [Linux Kconfig build configuration](reference/makefile-rules/linux.md#linux-kconfig-build-configuration) 
 | `build/${path}/u-boot/install` | `${path}/u-boot.cfg` `build/${path}/u-boot.src` `build/${path}/u-boot/.config` | [Build u-boot](reference/makefile-rules/u-boot.md#build-u-boot) 
 | `build/${path}/u-boot/.config` | `${path}/u-boot.cfg` `build/${path}/u-boot.src` `*.kconfig` | [u-boot Kconfig build configuration](reference/makefile-rules/u-boot.md#u-boot-kconfig-build-configuration) 
+| `build/${path}.exec`           | `${path}.sh` `build/${path}.src`             | [Execute shell script](reference/makefile-rules/script.md#execute-shell-script)
 | `build/${path}.src`            | `${path}.git.cfg` `*.patch`                  | [Clone Git repository](reference/makefile-rules/file-fetch.md#clone-git-repository)
 | `build/${path}.src`            | `${path}.download.cfg` `*.patch`             | [Download file](reference/makefile-rules/file-fetch.md#download-file)
 | `build/${file}.qcow2`          | `build/${file}.raw`                          | [Convert raw disk image to QCOW2](reference/makefile-rules/disk-formats.md#convert-raw-disk-image-to-qcow2)
