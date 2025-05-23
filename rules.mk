@@ -114,7 +114,7 @@ build/%/linux/install: %/linux.cfg build/%/linux.src build/%/linux/.config
 			$${INSTALL_TARGET:-install} \
 			modules_install \
 		&& for f in $${DTB}; do \
-			cp -rf build/$*/linux/arch/$${ARCH}/boot/dts/$$f build/$*/linux/install/boot/ ; \
+			cp -rfL build/$*/linux/arch/$${ARCH}/boot/dts/$$f build/$*/linux/install/boot/ ; \
 		done
 	$(AT)rm -f build/$*/linux/install/lib/modules/*/build
 	$(AT)touch "$@"
@@ -141,7 +141,7 @@ build/%/u-boot/install: %/u-boot.cfg build/%/u-boot.src build/%/u-boot/.config
 			olddefconfig \
 			all \
 		&& for f in $${INSTALL_FILENAMES:-u-boot.bin}; do \
-			cp -rf build/$*/u-boot/$$f build/$*/u-boot/install ; \
+			cp -rfL build/$*/u-boot/$$f build/$*/u-boot/install ; \
 		done
 
 .PRECIOUS: build/%/u-boot/.config
