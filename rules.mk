@@ -55,14 +55,14 @@ endif
 
 .PRECIOUS: build/%.src
 build/%.src: %.git.cfg
-	@echo "---------------------------------------------------- -----"
+	@echo "----------------------------------------------------------"
 	@. "./$*.git.cfg" && echo "Checking out $$URL @ $$REFNAME"
 	@echo "----------------------------------------------------------"
 	$(AT)$(MKDISTRO_ROOT)/tools/git-clone "build/$*" "./$*.git.cfg" $(filter %.patch,$^)
 
 .PRECIOUS: build/%.src
 build/%.src: %.download.cfg
-	@echo "---------------------------------------------------- -----"
+	@echo "----------------------------------------------------------"
 	@. "./$*.download.cfg" && echo "Downloading $$URL"
 	@echo "----------------------------------------------------------"
 	$(AT)$(MKDISTRO_ROOT)/tools/download "build/$*" "./$*.download.cfg" $(filter %.patch,$^)
@@ -94,6 +94,9 @@ build/%.tar build/%.tar.d: %.container.cfg
 
 .PRECIOUS: build/%/linux/install
 build/%/linux/install: %/linux.cfg build/%/linux.src build/%/linux/.config
+	@echo "----------------------------------------------------------"
+	@echo "[$*] Building Linux kernel"
+	@echo "----------------------------------------------------------"
 	$(AT)rm -rf "$@"
 	$(AT). "./$*/linux.cfg" \
 		&& make -j 4 -C "build/$*/linux" \
@@ -118,6 +121,9 @@ build/%/linux/install: %/linux.cfg build/%/linux.src build/%/linux/.config
 
 .PRECIOUS: build/%/linux/.config
 build/%/linux/.config: %/linux.cfg build/%/linux.src
+	@echo "----------------------------------------------------------"
+	@echo "[$*] Merging Linux config"
+	@echo "----------------------------------------------------------"
 	$(AT). "./$*/linux.cfg" \
 		&& build/$*/linux/scripts/kconfig/merge_config.sh -m -n -r -y -O "$(dir $@)" \
 			$${DEFCONFIG:+build/$*/linux/arch/$${ARCH}/configs/$${DEFCONFIG}_defconfig} \
@@ -129,6 +135,9 @@ build/%/linux/.config: %/linux.cfg build/%/linux.src
 
 .PRECIOUS: build/%/u-boot/install
 build/%/u-boot/install: %/u-boot.cfg build/%/u-boot.src build/%/u-boot/.config
+	@echo "----------------------------------------------------------"
+	@echo "[$*] Building u-boot bootloader"
+	@echo "----------------------------------------------------------"
 	$(AT)rm -rf "$@"
 	$(AT)mkdir -p "$@"
 	$(AT). "./$*/u-boot.cfg" \
@@ -143,6 +152,9 @@ build/%/u-boot/install: %/u-boot.cfg build/%/u-boot.src build/%/u-boot/.config
 
 .PRECIOUS: build/%/u-boot/.config
 build/%/u-boot/.config: %/u-boot.cfg build/%/u-boot.src
+	@echo "----------------------------------------------------------"
+	@echo "[$*] Merging u-boot config"
+	@echo "----------------------------------------------------------"
 	$(AT). "./$*/u-boot.cfg" \
 	  && build/$*/u-boot/scripts/kconfig/merge_config.sh -m -n -r -O "$(dir $@)" \
 	  	$${DEFCONFIG:+build/$*/u-boot/configs/$${DEFCONFIG}_defconfig} \
@@ -155,6 +167,9 @@ build/%/u-boot/.config: %/u-boot.cfg build/%/u-boot.src
 
 .PRECIOUS: build/%.exec
 build/%.exec: %.sh build/%.src
+	@echo "----------------------------------------------------------"
+	@echo "[$*] Executing shell script"
+	@echo "----------------------------------------------------------"
 	$(AT) DIR="$$(pwd)" \
 		&& cd "build/$*" \
 		&& sh "$$DIR/$<" \
@@ -188,7 +203,7 @@ build/%.fat: %.fat.cfg build/%.tar
 		
 .PRECIOUS: build/%.cpio
 build/%.cpio: build/%.tar
-	@echo "---------------------------------------------------- -----"
+	@echo "----------------------------------------------------------"
 	@echo "[$*] Converting tar to cpio archive"
 	@echo "----------------------------------------------------------"
 	$(AT)$(MKDISTRO_ROOT)/tools/tar2cpio "$<" "$@"
