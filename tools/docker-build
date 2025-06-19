@@ -50,7 +50,8 @@ else
 		"$BUILD_DIR"
 
 	# Image remains in Docker image store, so use a sentinel file
-	docker image inspect --format='{{ .Id }}' "$TAG" > "$DEST_FILENAME"
+	echo "$TAG" > "$DEST_FILENAME"
+	docker image inspect --format='{{ .Id }}' "$TAG" >> "$DEST_FILENAME"
 fi
 
 # Build file dependencies from the main context, automatically included by makrocosm/include.mk
