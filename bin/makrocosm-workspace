@@ -3,10 +3,11 @@
 set -e
 [ "$VERBOSE_WORKSPACE" != 1 ] || set -x
 
-WORKSPACE_IMAGE="$1"
+WORKSPACE="$1"
 shift
 
-if [ -z "$WORKSPACE_IMAGE" ] || ! docker image inspect "$WORKSPACE_IMAGE" 2>/dev/null 1>&2; then
+WORKSPACE_IMAGE_REF="$(head -1 "build/$WORKSPACE")"
+if [ -z "$WORKSPACE_IMAGE_REF" ] || ! docker image inspect "$WORKSPACE_IMAGE_REF" 2>/dev/null 1>&2; then
   exec "$@"
   exit 1
 fi
@@ -28,5 +29,5 @@ docker run -i $TTY \
 	--group-add=sudo \
 	--env-file="$envfile" \
 	--env=HOME=/home \
-	"$WORKSPACE_IMAGE" \
+	"$WORKSPACE_IMAGE_REF" \
 	"$@"
