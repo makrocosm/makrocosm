@@ -21,18 +21,20 @@ The dependency file is used automatically.
 ## Build container image
 
 Build a container image and save it to the Docker container image store.
-The rule's target is a sentinel file that gets updated when the container image
-is updated.
+The rule's target is a sentinel file that gets updated with the image
+reference and hash.
   
   - Target: `build/${path}`
   - Required dependencies:
     - `${file}.container.cfg` -  See [Configuration file](#configuration-file).
 
-The name of the created container image is derived from the target `${path}`,
-where path separators `/` are replaced with hyphens `-`.
+The image reference of the created container image is either specified by the
+`DOCKER_IMAGE_REF` variable in the configuration file if it is set, otherwise
+it will be derived from the target `${path}`, where path separators `/` are
+replaced with hyphens `-`.
 For example, targeting `build/common/alpine/rootfs` will create the container image
-named `base-alpine-rootfs`. The value of the `DOCKER_TAG_PREFIX` configuration option
-is prepended to this name.
+named `common-alpine-rootfs`.
+The full reference of the container image is `${DOCKER_IMAGE_REF_PREFIX}${DOCKER_IMAGE_REF}:${DOCKER_IMAGE_TAG}`.
 
 This container image can be referenced by other Dockerfiles in `FROM` and
 `COPY --from` statements, however the dependency on the target sentinel file
@@ -40,7 +42,7 @@ must be added explicitly.
 For example, for the following Dockerfile:
 
 ```Dockerfile title="platform/x64/rootfs/Dockerfile"
-FROM base-alpine-rootfs
+FROM common-alpine-rootfs
 ```
 
 The dependency must be added to the Makefile as below:
@@ -83,5 +85,13 @@ The following options are valid in the `${path}.container.cfg` configuration fil
      that are made available in the Dockerfile.
    - `DOCKER_ARGS` - *Optional* - Extra arguments to pass to the
      `docker build` command.
-   - `DOCKER_TAG_PREFIX` - *Optional* - Prefix to use on the resulting Docker
-     image tag during export to the container store.
+   - `DOCKER_IMAGE_REF` - *Optional* - The full Docker image reference of
+     the built container image as it gets saved to the image store.
+     This expects to follow the `NAMESPACE/REPOSITORY[:TAG]` convention.
+     Leave blank to derive a reference name from the target.
+   - `DOCKER_IMAGE_REF_PREFIX` - *Optional* - A prefix string to apply to
+     the image reference name. Note that this can be applied project-wide
+     by exporting the variable in the top-level Makefile.
+   - `DOCKER_IMAGE_TAG` - *Optional* - A version (e.g. `1.2.3`) that gets
+     added to the Docker image reference name as a tag.
+     Leave blank to use `latest`.
