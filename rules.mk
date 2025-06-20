@@ -39,16 +39,13 @@ else
 	WORKSPACE ?= $(MKDISTRO_ROOT)/workspace/ubuntu-24.04
 endif
 
-# Matches container image name built by tools/docker-build
-WORKSPACE_IMAGE = $(subst /,-,$(WORKSPACE))
-
-ifneq ($(WORKSPACE_IMAGE),)
+ifneq ($(WORKSPACE),)
 # Make sure the workspace image is up to date. This runs before all targets.
 _ := $(shell make --quiet WORKSPACE= build/$(WORKSPACE) >&2)
 
 # Run recipe commands in the workspace container shell, but falls back
 # to the host environment if the workspace image is not available.
-SHELL = $(MKDISTRO_ROOT)/bin/makrocosm-workspace $(DOCKER_TAG_PREFIX)$(WORKSPACE_IMAGE) /bin/sh
+SHELL = $(MKDISTRO_ROOT)/bin/makrocosm-workspace $(WORKSPACE) /bin/sh
 
 endif
 
