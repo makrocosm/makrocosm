@@ -47,7 +47,7 @@ fi
 echo "Cloning from local shared repository into target $DEST_DIR" >&2
 rm -rf "$DEST_DIR"
 git clone "$CLONE_DIR" "$DEST_DIR"
-git -C "$DEST_DIR" checkout "$REFNAME"
+git -C "$DEST_DIR" checkout "$REFNAME" --
 
 for patch in $PATCHES; do
 	echo "Applying patch $patch" >&2
