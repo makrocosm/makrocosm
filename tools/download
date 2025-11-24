@@ -10,7 +10,7 @@
 set -e
 [ "$VERBOSE" != 1 ] || set -x
 
-TAR_FORMATS="tar tar.gz tar.bz2 tar.xz tgz"
+ARCHIVE_FORMATS="tar tar.gz tar.bz2 tar.xz tgz deb"
 
 DEST="$1"
 CFG_FILENAME="$2"
@@ -55,22 +55,33 @@ if [ "$SHA256" ]; then
 fi
 
 #
-# tar detection
+# Archive detection
 #
 
-TAR=
-for EXT in $TAR_FORMATS; do
+ARCHIVE=
+for EXT in $ARCHIVE_FORMATS; do
 	if [ "$EXT" = "$FORMAT" ] || [ -z "$FORMAT" -a "$DOWNLOAD_FILENAME" != "${DOWNLOAD_FILENAME%.$EXT}" ]; then
-		TAR=y
+		ARCHIVE=y
 		break
 	fi
 done
 
 rm -rf "$DEST"
-if [ "$TAR" = y -a "$EXTRACT" != n ]; then
-	# Extract tar into destination
+if [ "$ARCHIVE" = y -a "$EXTRACT" != n ]; then
+	# Extract into destination
 	mkdir -p "$DEST"
-	tar xf "$DOWNLOAD_FILENAME" --strip "${STRIP:-1}" -C "$DEST"
+	case "$EXT" in
+		tar|tar.gz|tar.bz2|tar.xz|tgz)
+			tar xf "$DOWNLOAD_FILENAME" --strip "${STRIP:-1}" -C "$DEST"
+			;;
+		deb)
+			dpkg-deb --raw-extract "$DOWNLOAD_FILENAME" "$DEST"
+			;;
+		*)
+			echo "ERROR: Unexpected archive extension $EXT" >&2
+			exit 1
+			;;
+	esac
 
 	if [ "$?" != 0 ]; then
 		echo "ERROR: Failed to extracted archive to $DEST" >&2
