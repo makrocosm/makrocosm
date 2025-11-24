@@ -99,14 +99,14 @@ build/%/linux/install: %/linux.cfg build/%/linux.src build/%/linux/.config
 	@echo "----------------------------------------------------------"
 	$(AT)rm -rf "$@"
 	$(AT). "./$*/linux.cfg" \
-		&& make -j 4 -C "build/$*/linux" \
+		&& make -j $$(( $$(nproc) - 1)) -C "build/$*/linux" \
 			ARCH=$${ARCH} \
 			CROSS_COMPILE=$${CROSS_COMPILE} \
 			olddefconfig \
 			all
 	$(AT)mkdir -p "$@/boot"
 	$(AT). "./$*/linux.cfg" \
-		&& make -j 4 -C "build/$*/linux" \
+		&& make -j $$(( $$(nproc) - 1)) -C "build/$*/linux" \
 			ARCH=$${ARCH} \
 			CROSS_COMPILE=$${CROSS_COMPILE} \
 			INSTALL_PATH="/workspace/build/$*/linux/install/boot" \
@@ -141,7 +141,7 @@ build/%/u-boot/install: %/u-boot.cfg build/%/u-boot.src build/%/u-boot/.config
 	$(AT)rm -rf "$@"
 	$(AT)mkdir -p "$@"
 	$(AT). "./$*/u-boot.cfg" \
-		&& make -j 4 -C "build/$*/u-boot" \
+		&& make -j $$(( $$(nproc) - 1)) -C "build/$*/u-boot" \
 			ARCH=$${ARCH} \
 			CROSS_COMPILE=$${CROSS_COMPILE} \
 			olddefconfig \
