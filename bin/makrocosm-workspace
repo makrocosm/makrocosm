@@ -14,7 +14,12 @@ fi
 
 envfile="$(mktemp)"
 trap 'rm $envfile' EXIT
-env | egrep -v '^[^=]*PATH=' > "$envfile"
+env | egrep -v '^[^=]*(PATH|SSH_AUTH_SOCK)=' > "$envfile"
+
+SSH_AGENT_ARGS=
+if [ "$SSH_AUTH_SOCK" ]; then
+  SSH_AGENT_ARGS="--mount=type=bind,source=$SSH_AUTH_SOCK,target=/var/run/ssh-agent.sock --env=SSH_AUTH_SOCK=/var/run/ssh-agent.sock"
+fi
 
 tty -s && TTY=-t || TTY=
 docker run -i $TTY \
@@ -29,5 +34,6 @@ docker run -i $TTY \
 	--group-add=sudo \
 	--env-file="$envfile" \
 	--env=HOME=/home \
+	$SSH_AGENT_ARGS \
 	"$WORKSPACE_IMAGE_REF" \
 	"$@"
