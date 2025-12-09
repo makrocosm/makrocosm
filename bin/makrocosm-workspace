@@ -21,6 +21,13 @@ if [ "$SSH_AUTH_SOCK" ]; then
   SSH_AGENT_ARGS="--mount=type=bind,source=$SSH_AUTH_SOCK,target=/var/run/ssh-agent.sock --env=SSH_AUTH_SOCK=/var/run/ssh-agent.sock"
 fi
 
+DOCKER_CONFIG_ARGS=
+if [ -d $HOME/.docker ]; then
+  # Pass through Docker config to allow builds that require pulling images
+  # from private repositories to use the host's credentials
+	DOCKER_CONFIG_ARGS="--mount=type=bind,source=$HOME/.docker,target=/home/.docker"
+fi
+
 tty -s && TTY=-t || TTY=
 docker run -i $TTY \
 	--rm \
@@ -34,6 +41,7 @@ docker run -i $TTY \
 	--group-add=sudo \
 	--env-file="$envfile" \
 	--env=HOME=/home \
+	$DOCKER_CONFIG_ARGS \
 	$SSH_AGENT_ARGS \
 	"$WORKSPACE_IMAGE_REF" \
 	"$@"
