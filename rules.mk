@@ -176,7 +176,7 @@ build/%.exec: %.sh build/%.src
 	@echo "----------------------------------------------------------"
 	$(AT) DIR="$$(pwd)" \
 		&& cd "build/$*" \
-		&& sh "$$DIR/$<" \
+		&& SRCDIR="$$DIR/$(dir $*)" sh "$$DIR/$<" \
 		&& touch "$$DIR/$@"
 
 
