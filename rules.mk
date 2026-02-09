@@ -110,7 +110,7 @@ build/%/linux/install: %/linux.cfg build/%/linux.src build/%/linux/.config
 			all
 	$(AT)mkdir -p "$@/boot"
 	$(AT). "./$*/linux.cfg" \
-		&& make -j $$(( $$(nproc) - 1)) -C "build/$*/linux" \
+		&& make -j $$(( $$(nproc) - 1)) -C "build/$*/linux" -B \
 			ARCH=$${ARCH} \
 			CROSS_COMPILE=$${CROSS_COMPILE} \
 			INSTALL_PATH="/workspace/build/$*/linux/install/boot" \
