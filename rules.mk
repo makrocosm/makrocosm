@@ -2,6 +2,8 @@
 #? -----------------
 #?
 
+ifeq ($(MKDISTRO_ROOT),)
+
 # Path variables
 export MAKEFILE_ROOT = $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 export MKDISTRO_ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
@@ -46,6 +48,8 @@ _ := $(shell make --quiet WORKSPACE= build/$(WORKSPACE) >&2)
 # Run recipe commands in the workspace container shell, but falls back
 # to the host environment if the workspace image is not available.
 SHELL = $(MKDISTRO_ROOT)/bin/makrocosm-workspace $(WORKSPACE) /bin/sh
+
+endif
 
 endif
 
