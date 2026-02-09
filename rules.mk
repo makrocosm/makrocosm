@@ -2,15 +2,15 @@
 #? -----------------
 #?
 
-ifeq ($(MKDISTRO_ROOT),)
+ifeq ($(MAKROCOSM_ROOT),)
 
 # Path variables
 export MAKEFILE_ROOT = $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
-export MKDISTRO_ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-ifeq ($(MKDISTRO_ROOT),$(MAKEFILE_ROOT))
-	MKDISTRO_ROOT := .
+export MAKROCOSM_ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+ifeq ($(MAKROCOSM_ROOT),$(MAKEFILE_ROOT))
+	MAKROCOSM_ROOT := .
 else
-	MKDISTRO_ROOT := $(MKDISTRO_ROOT:$(MAKEFILE_ROOT)%/=%)
+	MAKROCOSM_ROOT := $(MAKROCOSM_ROOT:$(MAKEFILE_ROOT)%/=%)
 endif
 
 #? Run with "make VERBOSE=1 ..." to see make and tool trace
@@ -35,10 +35,10 @@ HELP_COMMENT ?= '\#!'
 # The directory target of the workspace container to use for building.
 # Override if a custom workspace is required.
 # Clear to build in the host environment.
-ifeq ($(MKDISTRO_ROOT),.)
+ifeq ($(MAKROCOSM_ROOT),.)
 	WORKSPACE ?= workspace/ubuntu-24.04
 else
-	WORKSPACE ?= $(MKDISTRO_ROOT)/workspace/ubuntu-24.04
+	WORKSPACE ?= $(MAKROCOSM_ROOT)/workspace/ubuntu-24.04
 endif
 
 ifneq ($(WORKSPACE),)
@@ -47,7 +47,7 @@ _ := $(shell make --quiet WORKSPACE= build/$(WORKSPACE) >&2)
 
 # Run recipe commands in the workspace container shell, but falls back
 # to the host environment if the workspace image is not available.
-SHELL = $(MKDISTRO_ROOT)/bin/makrocosm-workspace $(WORKSPACE) /bin/sh
+SHELL = $(MAKROCOSM_ROOT)/bin/makrocosm-workspace $(WORKSPACE) /bin/sh
 
 endif
 
@@ -62,14 +62,14 @@ build/%.src: %.git.cfg
 	@echo "----------------------------------------------------------"
 	@. "./$*.git.cfg" && echo "Checking out $$URL @ $$REFNAME"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/git-clone "build/$*" "./$*.git.cfg" $(filter %.patch,$^)
+	$(AT)$(MAKROCOSM_ROOT)/tools/git-clone "build/$*" "./$*.git.cfg" $(filter %.patch,$^)
 
 .PRECIOUS: build/%.src
 build/%.src: %.download.cfg
 	@echo "----------------------------------------------------------"
 	@. "./$*.download.cfg" && echo "Downloading $$URL"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/download "build/$*" "./$*.download.cfg" $(filter %.patch,$^)
+	$(AT)$(MAKROCOSM_ROOT)/tools/download "build/$*" "./$*.download.cfg" $(filter %.patch,$^)
 
 
 ###############################################################################
@@ -81,14 +81,14 @@ build/% build/%.d: %.container.cfg
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Building container image"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/docker-build store "./$*.container.cfg" "$*" "$@"
+	$(AT)$(MAKROCOSM_ROOT)/tools/docker-build store "./$*.container.cfg" "$*" "$@"
 
 .PRECIOUS: build/%.tar build/%.tar.d
 build/%.tar build/%.tar.d: %.container.cfg
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Building container image to tar export"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/docker-build tar "./$*.container.cfg" "$*" "$@"
+	$(AT)$(MAKROCOSM_ROOT)/tools/docker-build tar "./$*.container.cfg" "$*" "$@"
 
 -include $(shell find -type f -iname '*.container.d')
 
@@ -189,28 +189,28 @@ build/%.sqfs: %.sqfs.cfg build/%.tar
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Converting tar to squashfs image"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/tar2sqfs "./$*.sqfs.cfg" "build/$*.tar" "$@"
+	$(AT)$(MAKROCOSM_ROOT)/tools/tar2sqfs "./$*.sqfs.cfg" "build/$*.tar" "$@"
 
 .PRECIOUS: build/%.ext4
 build/%.ext4: %.ext4.cfg build/%.tar
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Converting tar to ext4 image"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/tar2ext4 "./$*.ext4.cfg" "build/$*.tar" "$@"
+	$(AT)$(MAKROCOSM_ROOT)/tools/tar2ext4 "./$*.ext4.cfg" "build/$*.tar" "$@"
 
 .PRECIOUS: build/%.fat
 build/%.fat: %.fat.cfg build/%.tar
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Converting tar to FAT image"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/tar2fat "./$*.fat.cfg" "build/$*.tar" "$@"
+	$(AT)$(MAKROCOSM_ROOT)/tools/tar2fat "./$*.fat.cfg" "build/$*.tar" "$@"
 		
 .PRECIOUS: build/%.cpio
 build/%.cpio: build/%.tar
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Converting tar to cpio archive"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/tar2cpio "$<" "$@"
+	$(AT)$(MAKROCOSM_ROOT)/tools/tar2cpio "$<" "$@"
 
 
 ###############################################################################
@@ -286,7 +286,7 @@ build/%.pad: %.pad.cfg build/%
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Padding file"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MKDISTRO_ROOT)/tools/pad "./$*.pad.cfg" "build/$*" "$@"
+	$(AT)$(MAKROCOSM_ROOT)/tools/pad "./$*.pad.cfg" "build/$*" "$@"
 
 
 ###############################################################################
