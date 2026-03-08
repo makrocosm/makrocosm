@@ -113,8 +113,8 @@ build/%/linux/install: %/linux.cfg build/%/linux.src build/%/linux/.config
 		&& make -j $$(( $$(nproc) - 1)) -C "build/$*/linux" -B \
 			ARCH=$${ARCH} \
 			CROSS_COMPILE=$${CROSS_COMPILE} \
-			INSTALL_PATH="/workspace/build/$*/linux/install/boot" \
-			INSTALL_MOD_PATH="/workspace/build/$*/linux/install" \
+			INSTALL_PATH="$$(pwd)/build/$*/linux/install/boot" \
+			INSTALL_MOD_PATH="$$(pwd)/build/$*/linux/install" \
 			$${INSTALL_TARGET:-install} \
 			modules_install \
 		&& for f in $${DTB}; do \
