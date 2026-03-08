@@ -30,7 +30,14 @@ if [ "$MAKROCOSM_GIT_CLONE_SHALLOW" = 1 ]; then
 	# git repo with the entire history. Shallow clone the repo.
 	echo "Shallow cloning from remote $URL into target $DEST_DIR" >&2
 	rm -rf "$DEST_DIR"
-	git clone --depth=1 --branch "$REFNAME" "$URL" "$DEST_DIR"
+	mkdir -p "$DEST_DIR"
+	git -C "$DEST_DIR" init && git -C "$DEST_DIR" remote add origin "$URL" && git -C "$DEST_DIR" fetch --depth 1 origin "$REFNAME" && git -C "$DEST_DIR" checkout FETCH_HEAD
+	for patch in $PATCHES; do
+		echo "Applying patch $patch" >&2
+		git -C "$DEST_DIR" am "$(pwd)/$patch" || patch -d "$DEST_DIR" -p1 -i "$(pwd)/$patch"
+	done
+
+	echo "git $URL $REFNAME $PATCHES" > "$DEST_DIR.src"
 	exit 0
 fi
 
