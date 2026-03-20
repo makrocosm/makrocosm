@@ -316,13 +316,13 @@ deps: #? Install dependencies
 .PHONY: tftpboot
 tftpboot: SHELL = /bin/sh
 tftpboot: #? Run a tftp server providing files from the build directory
-	@echo "Serving build directory over TFTP on port 69"
+	@echo "Serving ./build/$${TFTP_DIR} over TFTP on port 69"
 	@docker run --rm \
 		-p=69:1069/udp \
 		--env=TFTPD_BIND_ADDRESS=0.0.0.0:1069 \
 		--env=TFTPD_EXTRA_ARGS='--blocksize 1468' \
 		--cap-drop=all --cap-add=SETUID --cap-add=SETGID --cap-add=SYS_CHROOT \
-		--volume=./build:/tftpboot \
+		--volume=./build/$${TFTP_DIR}:/tftpboot \
 		docker.io/kalaksi/tftpd
 
 .PHONY:
