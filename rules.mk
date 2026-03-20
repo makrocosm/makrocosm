@@ -236,6 +236,13 @@ build/%.xz: build/%
 	@echo "----------------------------------------------------------"
 	$(AT)xz --stdout --compress -v "$<" > "$@"
 
+.PRECIOUS: build/%.lzma
+build/%.lzma: build/%
+	@echo "----------------------------------------------------------"
+	@echo "[$*] Compressing with lzma"
+	@echo "----------------------------------------------------------"
+	$(AT)xz --format=lzma --stdout --compress -v "$<" > "$@"
+
 .PRECIOUS: build/%.gz
 build/%.gz: build/%
 	@echo "----------------------------------------------------------"
