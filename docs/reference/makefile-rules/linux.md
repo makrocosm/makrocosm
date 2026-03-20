@@ -55,6 +55,9 @@ The following options are valid in the `${dir}/linux.cfg` configuration file.
   - `DEFCONFIG` - *Optional* - The stem of the platform's defconfig file, e.g. `sunxi` for
     the `sunxi_defconfig` available for the ARM architecture.
     Equivalent to `make ${platform}_defconfig` in Linux's build system.
+  - `BUILD_TARGET` - *Optional* - Architecture-specific build
+    target, determines the type of the kernel and device tree binaries built.
+    Default: `all`
   - `INSTALL_TARGET` - *Optional* - Architecture-specific install
     target used when building Linux manually, determines the type of the
     kernel binary copied to the `linux/install` directory when built.

@@ -107,7 +107,7 @@ build/%/linux/install: %/linux.cfg build/%/linux.src build/%/linux/.config
 			ARCH=$${ARCH} \
 			CROSS_COMPILE=$${CROSS_COMPILE} \
 			olddefconfig \
-			all
+			$${BUILD_TARGET:-all}
 	$(AT)mkdir -p "$@/boot"
 	$(AT). "./$*/linux.cfg" \
 		&& make -j $$(( $$(nproc) - 1)) -C "build/$*/linux" -B \
