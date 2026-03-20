@@ -54,6 +54,18 @@ if [ "$SHA256" ]; then
 	echo "Validated with SHA256 checksum" >&2
 fi
 
+if [ "$SHA512" ]; then
+	CHECKSUM="$(sha512sum "$DOWNLOAD_FILENAME" | cut -d' ' -f1)"
+	if [ "$CHECKSUM" != "$SHA512" ]; then
+		echo "ERROR: SHA512 checksum mismatch for $DOWNLOAD_FILENAME" >&2
+		echo "Expected: $SHA512" >&2
+		echo "Actual:   $CHECKSUM" >&2
+		exit 1
+	fi
+	echo "Validated with SHA512 checksum" >&2
+fi
+
+
 #
 # Archive detection
 #
