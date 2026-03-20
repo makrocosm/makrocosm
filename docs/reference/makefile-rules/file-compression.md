@@ -29,3 +29,9 @@ other rules which are not shown.
   - Target: `build/${file}.gz`
   - Built dependencies:
     - `build/${file}` - The file to compress.
+
+## Compress file with LZMA
+
+  - Target: `build/${file}.lzma`
+  - Built dependencies:
+    - `build/${file}` - The file to compress.
