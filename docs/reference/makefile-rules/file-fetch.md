@@ -34,6 +34,8 @@ The following options are valid in the `${file}.download.cfg` configuration file
     container, e.g. `https://`, `ftp://`, etc.
   - `SHA256` - *Optional* - The file's SHA256 checksum to validate the
      integrity of the file after downloading.
+  - `SHA512` - *Optional* - The file's SHA512 checksum to validate the
+     integrity of the file after downloading.
   - `FORMAT` - *Optional* - Hint archive file format for extraction if the
     filename is not suffixed with one of the following extensions:
     `tar`, `tar.gz`, `tar.bz2` `tar.xz`, `tgz`.
