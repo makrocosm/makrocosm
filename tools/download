@@ -110,7 +110,7 @@ fi
 
 for patch in $PATCHES; do
 	echo "Applying patch $patch" >&2
-	patch -d "$DEST" -p1 -i "$(pwd)/patch"
+	patch -d "$DEST" -p1 -i "$(pwd)/$patch"
 done
 
 echo "download $URL $PATCHES" > "$DEST.src"
