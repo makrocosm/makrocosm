@@ -103,6 +103,7 @@ if [ "$ARCHIVE" = y -a "$EXTRACT" != n ]; then
 	echo "Extracted archive to $DEST" >&2
 else
 	# Copy archive into destination
+	mkdir -p "$(dirname "$DEST")"
 	cp "$DOWNLOAD_FILENAME" "$DEST"
 	echo "Copied downloaded file to $DEST" >&2
 fi
