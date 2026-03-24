@@ -62,15 +62,14 @@ build/%.src: %.git.cfg
 	@echo "----------------------------------------------------------"
 	@. "./$*.git.cfg" && echo "Checking out $$URL @ $$REFNAME"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MAKROCOSM_ROOT)/tools/git-clone "build/$*" "./$*.git.cfg" $(filter %.patch,$^)
+	$(AT)$(MAKROCOSM_ROOT)/tools/git-clone "build/$*" "./$*.git.cfg" $(filter %.patch %.series,$^)
 
 .PRECIOUS: build/%.src
 build/%.src: %.download.cfg
 	@echo "----------------------------------------------------------"
 	@. "./$*.download.cfg" && echo "Downloading $$URL"
 	@echo "----------------------------------------------------------"
-	$(AT)$(MAKROCOSM_ROOT)/tools/download "build/$*" "./$*.download.cfg" $(filter %.patch,$^)
-
+	$(AT)$(MAKROCOSM_ROOT)/tools/download "build/$*" "./$*.download.cfg" $(filter %.patch %.series,$^)
 
 ###############################################################################
 ## Container images

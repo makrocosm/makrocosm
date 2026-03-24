@@ -24,6 +24,10 @@ at that location if it is a file archive.
   - Optional dependencies:
      - `*.patch` - Patches to apply to the downloaded repository, applicable
        if the download is an extracted archive.
+     - `*.series` - Patch series to apply to the downloaded repository, applicable
+       if the download is an extracted archive. The file is expected to contain
+       new-line separated patch filenames. Ignores empty lines, and lines
+       beginning with `#`.
 
 ### Configuration file
 
@@ -52,6 +56,9 @@ The following options are valid in the `${file}.download.cfg` configuration file
       - `${file}.git.cfg` - See the configuration file details below.  
   - Optional dependencies:
      - `*.patch` - Patches to apply to the downloaded repository.
+     - `*.series` - Patch series to apply to the downloaded repository.
+       The file is expected to contain new-line separated patch filenames.
+       Ignores empty lines, and lines beginning with `#`.
 
 ### Configuration file
 
