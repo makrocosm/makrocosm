@@ -93,7 +93,13 @@ for arg in $BUILD_CONTEXTS; do
 
 	for file in '' $deps; do
 		file="${file%/}"
-		echo "$dir/$file:: ;" >> "$DEST_FILENAME.container.d"
-		echo "$DEST_FILENAME: $dir/$file" >> "$DEST_FILENAME.container.d"
+		path="$dir/$file"
+
+		# Symlinks can interfere with Make's timestamp check, so skip for now.
+		# We should come up better handling later
+		[ -L "$path" ] && continue
+
+		echo "$path:: ;" >> "$DEST_FILENAME.container.d"
+		echo "$DEST_FILENAME: $path" >> "$DEST_FILENAME.container.d"
 	done
 done
