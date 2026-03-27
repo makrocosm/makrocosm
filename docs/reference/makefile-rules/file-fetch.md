@@ -42,7 +42,7 @@ The following options are valid in the `${file}.download.cfg` configuration file
      integrity of the file after downloading.
   - `FORMAT` - *Optional* - Hint archive file format for extraction if the
     filename is not suffixed with one of the following extensions:
-    `tar`, `tar.gz`, `tar.bz2` `tar.xz`, `tgz`.
+    `tar`, `tar.gz`, `tar.bz2` `tar.xz`, `tgz`, `zip`, `deb`.
   - `EXTRACT` - *Optional* - Extract the archive to the directory
      Default: `y` if the file is an archive.
   - `STRIP` - *Optional* - The number of leading directories to strip

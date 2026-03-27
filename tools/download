@@ -10,7 +10,7 @@
 set -e
 [ "$VERBOSE" != 1 ] || set -x
 
-ARCHIVE_FORMATS="tar tar.gz tar.bz2 tar.xz tgz deb"
+ARCHIVE_FORMATS="tar tar.gz tar.bz2 tar.xz tgz zip deb"
 
 DEST="$1"
 CFG_FILENAME="$2"
@@ -85,6 +85,19 @@ if [ "$ARCHIVE" = y -a "$EXTRACT" != n ]; then
 	case "$EXT" in
 		tar|tar.gz|tar.bz2|tar.xz|tgz)
 			tar xf "$DOWNLOAD_FILENAME" --strip "${STRIP:-1}" -C "$DEST"
+			;;
+		zip)
+			unzip "$DOWNLOAD_FILENAME" -d "$DEST"
+			if [ -z "$STRIP" -o "$STRIP" = 1 ]; then
+				for d in "$DEST"/*; do
+					[ -d "$d" ] || continue
+					mv "$d"/* "$DEST"
+					rmdir "$d"
+				done
+			elif [ "$STRIP" != 0 ]; then
+				echo "ERROR: Cannot STRIP>1 on .zip file extraction"
+				exit 1
+			fi
 			;;
 		deb)
 			dpkg-deb --raw-extract "$DOWNLOAD_FILENAME" "$DEST"

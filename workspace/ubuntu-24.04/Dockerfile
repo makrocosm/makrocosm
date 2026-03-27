@@ -12,7 +12,7 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
       python3 python3-dev python3-pip python3-setuptools swig \
       libgnutls28-dev \
       # download \
-      ca-certificates curl \
+      ca-certificates curl unzip \
       # tar2fat \
       dosfstools mtools \
       # tar2sqfs \
