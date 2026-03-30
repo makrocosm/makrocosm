@@ -303,8 +303,10 @@ build/%.pad: %.pad.cfg build/%
 help: #? Display this help
 	@sed -rn -e 's/^#\?$$//p' -e 's/^#\? (.*)/\1/p' -e 's/(.+: ).*#\? (.*)/  \1\2/p' $(MAKEFILE_LIST)
 
-.PHONY: deps
-deps: #? Install dependencies
+.PHONY: deps deps.post deps.builtin deps.pre
+deps: deps.post #? Install dependencies
+deps.post: deps.builtin
+deps.builtin: deps.pre
 	@echo "Checking for cross-platform image store capability..."
 	$(AT)[ "$$(docker info -f '{{ .DriverStatus }}')" = '[[driver-type io.containerd.snapshotter.v1]]' ] \
 			|| (echo "containerd image store required"; false)
