@@ -308,11 +308,7 @@ deps: #? Install dependencies
 	@echo "Checking for cross-platform image store capability..."
 	$(AT)[ "$$(docker info -f '{{ .DriverStatus }}')" = '[[driver-type io.containerd.snapshotter.v1]]' ] \
 			|| (echo "containerd image store required"; false)
-ifndef MAKROCOSM_HOST_EMULATORS
-	@echo "Reinstalling cross-platform emulators..."
-	$(AT)docker run --rm --privileged tonistiigi/binfmt --uninstall '*'
-	$(AT)docker run --rm --privileged tonistiigi/binfmt --install all
-endif
+	$(AT)docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
 .PHONY: tftpboot
 tftpboot: SHELL = /bin/sh
