@@ -25,6 +25,14 @@ elif [ -z "$REFNAME" ]; then
 	exit 1
 fi
 
+# Ensure git has a valid committer identity for patching
+if ! git var GIT_COMMITTER_IDENT >/dev/null 2>&1; then
+    echo "Git committer identity not configured, setting defaults"
+
+    git config --global user.name  "${GIT_USER_NAME:-Build System}"
+    git config --global user.email "${GIT_USER_EMAIL:-build@example.invalid}"
+fi
+
 if [ "$MAKROCOSM_GIT_CLONE_SHALLOW" = 1 ]; then
 	# In some environments (e.g. CI build pipeline) we don't care about shared
 	# git repo with the entire history. Shallow clone the repo.
