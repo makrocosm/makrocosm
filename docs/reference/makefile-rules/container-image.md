@@ -95,3 +95,10 @@ The following options are valid in the `${path}.container.cfg` configuration fil
    - `DOCKER_IMAGE_TAG` - *Optional* - A version (e.g. `1.2.3`) that gets
      added to the Docker image reference name as a tag.
      Leave blank to use `latest`.
+   - `IMAGE` - *Optional* - Build the container image referenced by this
+     primary build context directory path, rather than the implied by
+     the stem of the rule `${path}`.
+     Defers to the build configuration in `$IMAGE.container.cfg`.
+   - `STAGE` - *Optional* - Target a named build stage in a multi-stage
+     container image build.
+     If not specified, the build targets the final stage.
