@@ -3,6 +3,8 @@
 # Configuration:
 #   ARCH
 #   BUILD_CONTEXTS
+#   IMAGE - Build the container image referenced by this path. $IMAGE.container.cfg must exist with the primary build context directory.
+#   STAGE - The Docker build stage to target, if not the final stage. Translates to `docker build` argument --targer=$STAGE
 #   BUILD_ARGS
 #   DOCKER_ARGS
 #   DOCKER_IMAGE_REF - Full reference format: NAMESPACE/REPOSITORY[:TAG]. Leave blank to autogenerate the name from the path.
@@ -19,12 +21,21 @@ DEST_FILENAME="$4"
 
 . "$CFG_FILENAME"
 
+if [ "$IMAGE" ]; then
+	. "./$IMAGE.container.cfg"
+	BUILD_DIR="$IMAGE"
+fi
+
 if [ -z "$DOCKER_IMAGE_REF" ]; then
 	DOCKER_IMAGE_REF="${DOCKER_IMAGE_REF_PREFIX}$(echo "$BUILD_DIR" | tr / -)"
 fi
 
 if [ "$DOCKER_IMAGE_TAG" ]; then
 	DOCKER_IMAGE_REF="${DOCKER_IMAGE_REF}:${DOCKER_IMAGE_TAG}"
+fi
+
+if [ "$STAGE" ]; then
+	DOCKER_ARGS="$DOCKER_ARGS --target=$STAGE"
 fi
 
 for arg in $BUILD_ARGS; do
