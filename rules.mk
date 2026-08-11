@@ -75,15 +75,15 @@ build/%.src: %.download.cfg
 ## Container images
 ###############################################################################
 
-.PRECIOUS: build/% build/%.d
-build/% build/%.d: %.container.cfg
+.PRECIOUS: build/%
+build/%: %.container.cfg
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Building container image"
 	@echo "----------------------------------------------------------"
 	$(AT)$(MAKROCOSM_ROOT)/tools/docker-build store "./$*.container.cfg" "$*" "$@"
 
-.PRECIOUS: build/%.tar build/%.tar.d
-build/%.tar build/%.tar.d: %.container.cfg
+.PRECIOUS: build/%.tar
+build/%.tar: %.container.cfg
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Building container image to tar export"
 	@echo "----------------------------------------------------------"
