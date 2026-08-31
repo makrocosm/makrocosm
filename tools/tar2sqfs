@@ -17,4 +17,18 @@ IMG="$(realpath "$3")"
 . "$CFG"
 COMPRESSION="${COMPRESSION:-zstd}"
 
-sqfstar -force -comp "$COMPRESSION" "$IMG" < "$TAR"
+# Docker's tar exporter omits the archive root directory, and inherits
+# the build user's identity and umask.
+# Most of the time this makes sense to be root:root.
+# Set its owner/permissions explicitly.
+ROOT_UID="${ROOT_UID:-0}"
+ROOT_GID="${ROOT_GID:-0}"
+ROOT_MODE="${ROOT_MODE:-0755}"
+
+sqfstar \
+	-force \
+	-comp "$COMPRESSION" \
+	-root-mode "$ROOT_MODE" \
+	-root-uid "$ROOT_UID" \
+	-root-gid "$ROOT_GID" \
+	"$IMG" < "$TAR"
