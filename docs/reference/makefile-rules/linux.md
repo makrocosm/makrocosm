@@ -67,6 +67,10 @@ The following options are valid in the `${dir}/linux.cfg` configuration file.
     the `linux/install` directory when built.
     Specify relative to the platform architecture's `dts` directory e.g.
     `allwinner/sun8i-h3-orangepi-one.dtb` found in `arch/arm/boot/dts/`.
+  - `INSTALL_FILENAMES` - *Optional* - A space-separated list of filenames of
+     additional build artifacts that will be copied from the build directory
+    `build/${dir}/linux` to the install target directory
+    `build/${dir}/linux/install`.
 
 !!! note
     The interactive workspace shell can used to discover the available

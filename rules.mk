@@ -119,6 +119,10 @@ build/%/linux/install: %/linux.cfg build/%/linux.src build/%/linux/.config
 		&& for f in $${DTB}; do \
 			cp -rfL build/$*/linux/arch/$${ARCH}/boot/dts/$$f build/$*/linux/install/boot/ ; \
 		done
+	$(AT). "./$*/linux.cfg" \
+		&& for f in $${INSTALL_FILENAMES}; do \
+			cp -rfL build/$*/linux/$$f build/$*/linux/install ; \
+		done
 	$(AT)rm -f build/$*/linux/install/lib/modules/*/build
 	$(AT)touch "$@"
 
