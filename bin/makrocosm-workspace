@@ -41,6 +41,7 @@ docker run -i $TTY \
 	--group-add=sudo \
 	--env-file="$envfile" \
 	--env=HOME=/home \
+	--env=MAKEFILE_ROOT=/workspace\
 	$DOCKER_CONFIG_ARGS \
 	$SSH_AGENT_ARGS \
 	"$WORKSPACE_IMAGE_REF" \
