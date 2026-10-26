@@ -76,7 +76,7 @@ build/%.src: %.directory.cfg
 	@echo "----------------------------------------------------------"
 	@echo "[$*] Creating directory"
 	@echo "----------------------------------------------------------"
-	$(AT)rm -rf "build/$*" && mkdir "build/$*"
+	$(AT)rm -rf "build/$*" && mkdir -p "build/$*" && touch "build/$*.src"
 
 ###############################################################################
 ## Container images
