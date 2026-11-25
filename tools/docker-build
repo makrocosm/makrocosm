@@ -84,9 +84,8 @@ deps="$(printf "FROM scratch\nCOPY . /\n" \
 
 echo > "$DEST_FILENAME.container.d"
 for file in '' $deps; do
-		file="${file%/}"
-	echo "$BUILD_DIR/$file:: ;" >> "$DEST_FILENAME.container.d"
-	echo "$DEST_FILENAME: $BUILD_DIR/$file" >> "$DEST_FILENAME.container.d"
+	file="${file%/}"
+	printf '%s: $(wildcard %s)\n' "$DEST_FILENAME" "$BUILD_DIR/$file" >> "$DEST_FILENAME.container.d"
 done
 
 for arg in $BUILD_CONTEXTS; do
@@ -110,7 +109,6 @@ for arg in $BUILD_CONTEXTS; do
 		# We should come up better handling later
 		[ -L "$path" ] && continue
 
-		echo "$path:: ;" >> "$DEST_FILENAME.container.d"
-		echo "$DEST_FILENAME: $path" >> "$DEST_FILENAME.container.d"
+		printf '%s: $(wildcard %s)\n' "$DEST_FILENAME" "$path" >> "$DEST_FILENAME.container.d"
 	done
 done
