@@ -85,6 +85,11 @@ deps="$(printf "FROM scratch\nCOPY . /\n" \
 echo > "$DEST_FILENAME.container.d"
 for file in '' $deps; do
 	file="${file%/}"
+
+	# Overlay symlinks may only resolve inside the assembled image. Their
+	# parent directories track additions, removals and replacements.
+	[ -L "$BUILD_DIR/$file" ] && continue
+
 	printf '%s: $(wildcard %s)\n' "$DEST_FILENAME" "$BUILD_DIR/$file" >> "$DEST_FILENAME.container.d"
 done
 
